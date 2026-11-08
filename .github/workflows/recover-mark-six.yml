@@ -1,0 +1,60 @@
+name: recover-mark-six
+
+on:
+  workflow_dispatch:
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch archived MarkSix pages
+        run: |
+          mkdir -p out
+          python3 - <<'PY'
+          import json, urllib.request, os, time
+
+          base = "https://ab123666.github.io/MarkSix/"
+          cdx_url = ("https://web.archive.org/cdx/search/cdx?"
+                     "url=ab123666.github.io/MarkSix/*&output=json"
+                     "&filter=statuscode:200&collapse=digest&limit=100")
+          headers = {"User-Agent": "Mozilla/5.0 kyenglish-recovery"}
+
+          def get(url, timeout=45):
+              req = urllib.request.Request(url, headers=headers)
+              with urllib.request.urlopen(req, timeout=timeout) as r:
+                  return r.read()
+
+          try:
+              raw = get(cdx_url)
+              open("out/cdx.json", "wb").write(raw)
+              rows = json.loads(raw.decode("utf-8", "replace"))
+              print("cdx rows:", len(rows))
+          except Exception as e:
+              print("cdx error:", repr(e))
+              rows = []
+
+          timestamps = []
+          for row in rows[1:]:
+              if len(row) >= 2 and row[1].isdigit():
+                  timestamps.append(row[1])
+          timestamps = timestamps[-10:]
+          open("out/timestamps.txt", "w").write("\n".join(timestamps))
+          for ts in timestamps:
+              for suffix in ("", "index.html"):
+                  url = f"https://web.archive.org/web/{ts}id_/{base}{suffix}"
+                  try:
+                      data = get(url)
+                      name = f"MarkSix-{ts}{'-index' if suffix else ''}.html"
+                      open(f"out/{name}", "wb").write(data)
+                      print("saved", name, len(data))
+                      break
+                  except Exception as e:
+                      print("fetch error", url, repr(e))
+          print("done")
+          PY
+      - name: Upload archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: mark-six-archive
+          path: out
+          if-no-files-found: warn
