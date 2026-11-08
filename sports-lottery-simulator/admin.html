@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理员后台 - 竞彩投注</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ff5000'/%3E%3Cstop offset='100%25' style='stop-color:%23ff8c00'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-size='52' font-weight='bold' fill='white' text-anchor='middle' font-family='Arial, sans-serif'%3E管%3C/text%3E%3C/svg%3E">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, #fff8f3 0%, #ffe8d6 25%, #ffd0a8 50%, #ffb87a 75%, #ffa050 100%);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .container {
+    max-width: 600px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+  h1 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #999;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .form-group {
+    margin-bottom: 16px;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 6px;
+  }
+  input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.25s;
+    box-sizing: border-box;
+  }
+  input:focus {
+    border-color: #ff5000;
+    box-shadow: 0 0 0 4px rgba(255,80,0,0.1);
+  }
+  .btn {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #ff5000, #ff8c00);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+    margin-top: 8px;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255,80,0,0.4);
+  }
+  .btn:active {
+    transform: translateY(0);
+  }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .btn-row .btn {
+    flex: 1;
+    margin: 0;
+  }
+  .btn-deduct {
+    background: #ff4d4f;
+    border-color: #ff4d4f;
+  }
+  .btn-deduct:hover {
+    background: #d9363e;
+  }
+  .btn-clear {
+    background: #8c8c8c;
+    border-color: #8c8c8c;
+    margin-bottom: 10px;
+  }
+  .btn-clear:hover {
+    background: #595959;
+  }
+  .btn-secondary {
+    background: #f5f5f5;
+    color: #666;
+    margin-top: 12px;
+  }
+  .btn-secondary:hover {
+    background: #eee;
+    box-shadow: none;
+  }
+  .result {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    display: none;
+  }
+  .result.success {
+    background: #e8f8f0;
+    color: #07c160;
+    display: block;
+  }
+  .result.error {
+    background: #fef0f0;
+    color: #e74c3c;
+    display: block;
+  }
+  .user-list {
+    margin-top: 24px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+  }
+  .user-list h3 {
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 0;
+  }
+  .user-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .refresh-btn {
+    background: #ff5000;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .refresh-btn:hover {
+    background: #e64500;
+    transform: scale(1.05);
+  }
+  .refresh-btn:active {
+    transform: scale(0.95);
+  }
+  .search-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus {
+    border-color: #ff5000;
+  }
+  .user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: #fafafa;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .user-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .user-name {
+    font-weight: 600;
+    color: #333;
+  }
+  .user-pwd {
+    font-size: 11px;
+    color: #999;
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .copy-btn {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 11px;
+    color: #666;
+    cursor: pointer;
+    transition: none;
+    pointer-events: none;
+  }
+  .user-item:hover .copy-btn {
+    background: #fff0e8;
+    color: #ff5000;
+    border-color: #ffb088;
+  }
+  .copy-btn.copied {
+    background: #07c160;
+    color: #fff;
+    border-color: #07c160;
+  }
+  .copy-btn.selected {
+    background: #ff5000;
+    color: #fff;
+    border-color: #ff5000;
+  }
+  .delete-btn {
+    background: #fff;
+    border: 1px solid #ff4d4f;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 11px;
+    color: #ff4d4f;
+    cursor: pointer;
+    transition: none;
+    pointer-events: auto;
+    margin-left: 4px;
+  }
+  .delete-btn:hover {
+    background: #ff4d4f;
+    color: #fff;
+  }
+  .user-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  /* 自定义确认弹窗 */
+  .admin-confirm-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+  .admin-confirm-modal.active {
+    display: flex;
+  }
+  .admin-confirm-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    width: 85%;
+    max-width: 320px;
+    text-align: center;
+    animation: confirmIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes confirmIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .admin-confirm-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  .admin-confirm-message {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .admin-confirm-buttons {
+    display: flex;
+    gap: 12px;
+  }
+  .admin-confirm-btn {
+    flex: 1;
+    padding: 11px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .admin-confirm-btn.cancel {
+    background: #f5f5f5;
+    color: #666;
+  }
+  .admin-confirm-btn.confirm {
+    background: #ff4d4f;
+    color: #fff;
+  }
+  .admin-confirm-btn:active {
+    transform: scale(0.95);
+  }
+  /* 提示弹窗 */
+  .admin-alert-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+  .admin-alert-modal.active {
+    display: flex;
+  }
+  .admin-alert-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    width: 85%;
+    max-width: 320px;
+    text-align: center;
+    animation: confirmIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .admin-alert-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  .admin-alert-message {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .admin-alert-btn {
+    width: 100%;
+    padding: 11px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ff5000, #ff8c00);
+    color: #fff;
+    transition: all 0.2s;
+  }
+  .admin-alert-btn:active {
+    transform: scale(0.95);
+  }
+  .admin-delete-password {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .admin-delete-password:focus {
+    border-color: #ff4d4f;
+  }
+  .user-item:hover .copy-btn.selected {
+    background: #ff5000;
+    color: #fff;
+    border-color: #ff5000;
+  }
+  .user-balance {
+    color: #ff5000;
+    font-weight: 700;
+  }
+  .input-with-clear {
+    position: relative;
+  }
+  .input-with-clear input {
+    padding-right: 35px;
+  }
+  .clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ddd;
+    color: #666;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .clear-btn:hover {
+    background: #bbb;
+    color: #333;
+  }
+</style>
+</head>
+<body>
+
+<!-- 自定义确认弹窗 -->
+<div class="admin-confirm-modal" id="adminConfirmModal">
+  <div class="admin-confirm-box">
+    <div class="admin-confirm-title">确认操作</div>
+    <div class="admin-confirm-message" id="adminConfirmMessage"></div>
+    <div class="admin-confirm-buttons">
+      <button class="admin-confirm-btn cancel" id="adminConfirmCancel">取消</button>
+      <button class="admin-confirm-btn confirm" id="adminConfirmOk">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 自定义提示弹窗 -->
+<div class="admin-alert-modal" id="adminAlertModal">
+  <div class="admin-alert-box">
+    <div class="admin-alert-title">提示</div>
+    <div class="admin-alert-message" id="adminAlertMessage"></div>
+    <button class="admin-alert-btn" id="adminAlertOk">确定</button>
+  </div>
+</div>
+
+<!-- 删除用户确认弹窗（需输入密码） -->
+<div class="admin-confirm-modal" id="deleteConfirmModal">
+  <div class="admin-confirm-box">
+    <div class="admin-confirm-title" style="color:#ff4d4f;">删除用户确认</div>
+    <div class="admin-confirm-message" id="deleteConfirmMessage"></div>
+    <input type="password" class="admin-delete-password" id="deletePasswordInput" placeholder="请输入管理员密码确认">
+    <div class="admin-confirm-buttons">
+      <button class="admin-confirm-btn cancel" id="deleteConfirmCancel">取消</button>
+      <button class="admin-confirm-btn confirm" id="deleteConfirmOk" style="background:#ff4d4f;">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <h1>管理员后台</h1>
+  <div class="subtitle">给用户充值 / 查看用户列表</div>
+
+  <div class="form-group">
+    <label>管理员密码</label>
+    <input type="password" id="adminPassword" placeholder="请输入管理员密码" value="admin888">
+  </div>
+
+  <div class="form-group">
+    <label>金额（元）</label>
+    <input type="number" id="amount" placeholder="请输入金额" min="1" step="1">
+  </div>
+
+  <div class="btn-row">
+    <button class="btn" onclick="doRecharge()">确认充值</button>
+    <button class="btn btn-deduct" onclick="doDeduct()">确认扣款</button>
+  </div>
+  <button class="btn btn-clear" onclick="doClearBalance()">清空该用户余额</button>
+  <button class="btn btn-secondary" onclick="loadUsers()">查看所有用户</button>
+
+  <div class="result" id="result"></div>
+
+  <div class="user-list" id="userList" style="display:none;">
+    <div class="user-list-header">
+      <h3>用户列表</h3>
+      <button class="refresh-btn" onclick="loadUsers()">刷新</button>
+    </div>
+    <input type="text" class="search-input" id="searchInput" placeholder="搜索用户名..." oninput="filterUsers()">
+    <div id="userListContent"></div>
+  </div>
+</div>
+
+<script>
+var allUsers = [];
+var selectedUser = '';
+
+// 最长公共子序列（LCS）- DP计算长度 + 从左往右选择最靠左的匹配位置
+// 既保证最长匹配，又保证标橙位置尽可能靠左
+function lcs(keyword, username) {
+  const m = keyword.length;
+  const n = username.length;
+  if (m === 0 || n === 0) return { length: 0, positions: [] };
+  
+  // 1. 反向构建DP表：dp[i][j] = keyword[i..] 和 username[j..] 的LCS长度
+  const dp = [];
+  for (let i = 0; i <= m; i++) {
+    dp.push(new Array(n + 1).fill(0));
+  }
+  for (let i = m - 1; i >= 0; i--) {
+    for (let j = n - 1; j >= 0; j--) {
+      if (keyword[i] === username[j]) {
+        dp[i][j] = dp[i+1][j+1] + 1;
+      } else {
+        dp[i][j] = Math.max(dp[i+1][j], dp[i][j+1]);
+      }
+    }
+  }
+  
+  // 2. 从左往右找最靠左的LCS匹配位置
+  const L = dp[0][0]; // 最长公共子序列长度
+  const positions = [];
+  let lastIdx = -1;
+  let remaining = L; // 还需要匹配多少个字符
+  
+  // 遍历关键词的每个字符，找不到满足条件的位置就跳过该字符
+  for (let i = 0; i < m && remaining > 0; i++) {
+    for (let j = lastIdx + 1; j < n; j++) {
+      // 选择这个位置后，总匹配 = 1 + 后面还能匹配的长度
+      // 等于remaining说明这个位置是最优解的一部分
+      if (keyword[i] === username[j] && 1 + dp[i+1][j+1] === remaining) {
+        positions.push(j);
+        lastIdx = j;
+        remaining--;
+        break;
+      }
+    }
+  }
+  
+  return { length: positions.length, positions };
+}
+
+// 计算字符串匹配度（LCS最长公共子序列）
+function calcMatch(str, keyword) {
+  if (!keyword) return { score: 999, positions: [] };
+  const k = keyword.toLowerCase();
+  const s = str.toLowerCase();
+  const result = lcs(k, s);
+  return { score: result.length, positions: result.positions };
+}
+
+// 高亮匹配字符
+function highlightMatch(username, positions) {
+  if (!positions || positions.length === 0) return username;
+  var result = '';
+  for (var i = 0; i < username.length; i++) {
+    if (positions.indexOf(i) !== -1) {
+      result += '<span style="color:#ff5000;font-weight:700;">' + username[i] + '</span>';
+    } else {
+      result += username[i];
+    }
+  }
+  return result;
+}
+
+// 渲染用户列表（带搜索排序和高亮）
+function renderUserList(users, keyword) {
+  const contentEl = document.getElementById('userListContent');
+  
+  // 生成用户项HTML
+  function userItemHTML(u, positions, isSelected) {
+    const nameHTML = positions && positions.length > 0 ? highlightMatch(u.username, positions) : u.username;
+    const btnClass = isSelected ? 'copy-btn selected' : 'copy-btn';
+    const btnText = isSelected ? '已选中' : '选择';
+    return `<div class="user-item" onclick="selectUser('${u.username}')">
+      <div class="user-name-wrap">
+        <span class="user-name">${nameHTML}</span>
+        <span class="user-pwd">密码：${u.password}</span>
+        <button class="${btnClass}">${btnText}</button>
+      </div>
+      <div class="user-right">
+        <span class="user-balance">¥${u.balance.toFixed(2)}</span>
+        <button class="delete-btn" onclick="event.stopPropagation(); deleteUser('${u.username}')">删除</button>
+      </div>
+    </div>`;
+  }
+  
+  if (!keyword) {
+    if (users.length === 0) {
+      contentEl.innerHTML = '<div style="color:#999;font-size:13px;padding:10px 0;">暂无用户</div>';
+      return;
+    }
+    // 选中的用户排最前面
+    const selected = users.filter(u => u.username === selectedUser);
+    const others = users.filter(u => u.username !== selectedUser);
+    const sorted = [...selected, ...others];
+    contentEl.innerHTML = sorted.map(u => userItemHTML(u, null, u.username === selectedUser)).join('');
+    return;
+  }
+  
+  // 计算匹配度并排序：选中的永远最前（即使匹配度为0），然后匹配数高的在前，匹配数一样时短的在前
+  var matched = users.map(u => {
+    var m = calcMatch(u.username, keyword);
+    return { user: u, score: m.score, positions: m.positions };
+  }).filter(item => item.score > 0 || item.user.username === selectedUser)
+    .sort((a, b) => {
+      // 选中的永远最前
+      if (a.user.username === selectedUser) return -1;
+      if (b.user.username === selectedUser) return 1;
+      if (b.score !== a.score) return b.score - a.score;
+      return a.user.username.length - b.user.username.length;
+    });
+  
+  if (matched.length === 0) {
+    // 搜索无结果，但如果有选中用户，显示选中用户
+    if (selectedUser) {
+      const sel = users.find(u => u.username === selectedUser);
+      if (sel) {
+        contentEl.innerHTML = userItemHTML(sel, null, true);
+        return;
+      }
+    }
+    contentEl.innerHTML = '<div style="color:#999;font-size:13px;padding:10px 0;">无匹配用户</div>';
+    return;
+  }
+  
+  contentEl.innerHTML = matched.map(item => 
+    userItemHTML(item.user, item.positions, item.user.username === selectedUser)
+  ).join('');
+}
+
+// 选择账号（切换选中状态）
+function selectUser(username) {
+  if (selectedUser === username) {
+    // 取消选择
+    selectedUser = '';
+  } else {
+    // 选中
+    selectedUser = username;
+  }
+  const keyword = document.getElementById('searchInput').value.trim();
+  renderUserList(allUsers, keyword);
+}
+
+// 搜索过滤用户
+function filterUsers() {
+  const keyword = document.getElementById('searchInput').value.trim();
+  renderUserList(allUsers, keyword);
+}
+
+// 删除用户
+var pendingDeleteUser = '';
+function deleteUser(username) {
+  pendingDeleteUser = username;
+  document.getElementById('deleteConfirmMessage').textContent = '确定要删除用户 ' + username + ' 吗？此操作不可恢复！';
+  document.getElementById('deletePasswordInput').value = '';
+  document.getElementById('deleteConfirmModal').classList.add('active');
+  setTimeout(function() { document.getElementById('deletePasswordInput').focus(); }, 100);
+}
+
+async function doDeleteUser(username, adminPassword) {
+  if (!adminPassword) { showAdminAlert('请输入管理员密码'); return; }
+  
+  try {
+    const res = await fetch('/api/admin/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ admin_password: adminPassword, username })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showAdminAlert(data.message);
+      // 如果删除的是当前选中的用户，清除选中
+      if (selectedUser === username) selectedUser = '';
+      loadUsers();
+    } else {
+      showAdminAlert(data.error || '删除失败');
+    }
+  } catch (e) {
+    showAdminAlert('网络错误：' + e.message);
+  }
+}
+
+// 程序内提示弹窗
+function showAdminAlert(message) {
+  document.getElementById('adminAlertMessage').textContent = message;
+  document.getElementById('adminAlertModal').classList.add('active');
+}
+function hideAdminAlert() {
+  document.getElementById('adminAlertModal').classList.remove('active');
+}
+
+// 自定义确认弹窗
+function showAdminConfirm(message, callback) {
+  document.getElementById('adminConfirmMessage').textContent = message;
+  document.getElementById('adminConfirmModal').classList.add('active');
+  deleteCallback = callback;
+}
+function hideAdminConfirm() {
+  document.getElementById('adminConfirmModal').classList.remove('active');
+  deleteCallback = null;
+}
+
+// 显示/隐藏清除按钮
+function toggleClearBtn() {
+  var input = document.getElementById('username');
+  var btn = document.getElementById('clearUsernameBtn');
+  btn.style.display = input.value ? 'flex' : 'none';
+}
+
+// 清除用户名
+function clearUsername() {
+  document.getElementById('username').value = '';
+  document.getElementById('clearUsernameBtn').style.display = 'none';
+  document.getElementById('username').focus();
+}
+
+async function doRecharge() {
+  const adminPassword = document.getElementById('adminPassword').value;
+  const username = selectedUser;
+  const amount = parseFloat(document.getElementById('amount').value);
+  const resultEl = document.getElementById('result');
+
+  if (!adminPassword || !username || !amount || amount <= 0) {
+    resultEl.className = 'result error';
+    resultEl.textContent = '请先选择用户并填写金额';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/admin/recharge', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ admin_password: adminPassword, username, amount })
+    });
+    const data = await res.json();
+    
+    if (res.ok) {
+      resultEl.className = 'result success';
+      resultEl.textContent = data.message;
+      document.getElementById('amount').value = '';
+      loadUsers(); // 自动刷新用户列表
+    } else {
+      resultEl.className = 'result error';
+      resultEl.textContent = data.error || '充值失败';
+    }
+  } catch (e) {
+    resultEl.className = 'result error';
+    resultEl.textContent = '网络错误：' + e.message;
+  }
+}
+
+async function doDeduct() {
+  const adminPassword = document.getElementById('adminPassword').value;
+  const username = selectedUser;
+  const amount = parseFloat(document.getElementById('amount').value);
+  const resultEl = document.getElementById('result');
+
+  if (!adminPassword || !username || !amount || amount <= 0) {
+    resultEl.className = 'result error';
+    resultEl.textContent = '请先选择用户并填写金额';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/admin/deduct', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ admin_password: adminPassword, username, amount })
+    });
+    const data = await res.json();
+    
+    if (res.ok) {
+      resultEl.className = 'result success';
+      resultEl.textContent = data.message;
+      document.getElementById('amount').value = '';
+      loadUsers(); // 自动刷新用户列表
+    } else {
+      resultEl.className = 'result error';
+      resultEl.textContent = data.error || '扣款失败';
+    }
+  } catch (e) {
+    resultEl.className = 'result error';
+    resultEl.textContent = '网络错误：' + e.message;
+  }
+}
+
+async function doClearBalance() {
+  const adminPassword = document.getElementById('adminPassword').value;
+  const username = selectedUser;
+  const resultEl = document.getElementById('result');
+
+  if (!adminPassword || !username) {
+    resultEl.className = 'result error';
+    resultEl.textContent = '请先选择用户';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/admin/clear', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ admin_password: adminPassword, username })
+    });
+    const data = await res.json();
+    
+    if (res.ok) {
+      resultEl.className = 'result success';
+      resultEl.textContent = data.message;
+      document.getElementById('amount').value = '';
+      loadUsers();
+    } else {
+      resultEl.className = 'result error';
+      resultEl.textContent = data.error || '清空失败';
+    }
+  } catch (e) {
+    resultEl.className = 'result error';
+    resultEl.textContent = '网络错误：' + e.message;
+  }
+}
+
+async function loadUsers(silent) {
+  const adminPassword = document.getElementById('adminPassword').value;
+  if (!adminPassword) {
+    if (!silent) showAdminAlert('请先输入管理员密码');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/admin/users?admin_password=' + encodeURIComponent(adminPassword));
+    const data = await res.json();
+    
+    if (res.ok) {
+      const listEl = document.getElementById('userList');
+      listEl.style.display = 'block';
+      allUsers = data.users;
+      // 刷新后保持搜索状态
+      const keyword = document.getElementById('searchInput').value.trim();
+      renderUserList(allUsers, keyword);
+    } else {
+      if (!silent) showAdminAlert(data.error || '获取失败');
+    }
+  } catch (e) {
+    if (!silent) showAdminAlert('网络错误：' + e.message);
+  }
+}
+
+// 自动刷新用户列表（每2秒静默更新一次）
+setInterval(function() {
+  const listEl = document.getElementById('userList');
+  if (listEl && listEl.style.display === 'block') {
+    loadUsers(true);
+  }
+}, 2000);
+
+function copyText(text, btn) {
+  if (!text) return false;
+  
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function() {
+      if (btn) showCopySuccess(btn);
+    }).catch(function() {
+      fallbackCopy(text, btn);
+    });
+    return true;
+  }
+  
+  fallbackCopy(text, btn);
+  return true;
+}
+
+function fallbackCopy(text, btn) {
+  var textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.top = '0';
+  textarea.style.left = '0';
+  textarea.style.width = '2em';
+  textarea.style.height = '2em';
+  textarea.style.padding = '0';
+  textarea.style.border = 'none';
+  textarea.style.outline = 'none';
+  textarea.style.boxShadow = 'none';
+  textarea.style.background = 'transparent';
+  textarea.style.opacity = '0';
+  textarea.style.zIndex = '-1';
+  textarea.setAttribute('readonly', '');
+  document.body.appendChild(textarea);
+  textarea.select();
+  textarea.setSelectionRange(0, text.length);
+  
+  try {
+    document.execCommand('copy');
+    if (btn) showCopySuccess(btn);
+  } catch(e) {
+    prompt('请长按复制以下内容：', text);
+  }
+  
+  document.body.removeChild(textarea);
+}
+
+function showCopySuccess(btn) {
+  var originalText = btn.textContent;
+  btn.textContent = '已复制';
+  btn.classList.add('copied');
+  setTimeout(function() {
+    btn.textContent = originalText;
+    btn.classList.remove('copied');
+  }, 1500);
+}
+
+function copyUsername(username, btn) {
+  copyText(username, btn);
+}
+
+// 确认弹窗按钮事件（保留用于其他场景）
+document.getElementById('adminConfirmOk').addEventListener('click', function() {
+  if (deleteCallback) deleteCallback();
+  hideAdminConfirm();
+});
+document.getElementById('adminConfirmCancel').addEventListener('click', hideAdminConfirm);
+document.getElementById('adminConfirmModal').addEventListener('click', function(e) {
+  if (e.target === this) hideAdminConfirm();
+});
+
+// 删除确认弹窗按钮事件
+document.getElementById('deleteConfirmOk').addEventListener('click', function() {
+  const password = document.getElementById('deletePasswordInput').value;
+  if (!password) { showAdminAlert('请输入管理员密码'); return; }
+  doDeleteUser(pendingDeleteUser, password);
+  document.getElementById('deleteConfirmModal').classList.remove('active');
+});
+document.getElementById('deleteConfirmCancel').addEventListener('click', function() {
+  document.getElementById('deleteConfirmModal').classList.remove('active');
+});
+document.getElementById('deleteConfirmModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    document.getElementById('deleteConfirmModal').classList.remove('active');
+  }
+});
+// 回车确认删除
+document.getElementById('deletePasswordInput').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    document.getElementById('deleteConfirmOk').click();
+  }
+});
+
+// 提示弹窗按钮事件
+document.getElementById('adminAlertOk').addEventListener('click', hideAdminAlert);
+document.getElementById('adminAlertModal').addEventListener('click', function(e) {
+  if (e.target === this) hideAdminAlert();
+});
+</script>
+</body>
+</html>

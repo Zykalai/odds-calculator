@@ -50,3 +50,11 @@ python -m http.server 8000
 - 搜索上限 `MAX_SEARCH_S = 1e15`，超大目标会返回空结果。
 - 不保存历史，刷新即清空。
 - 计算全在前端完成，不联网取任何实时赔率。
+
+## 赔率购买模拟器
+
+同一仓库下的竞彩足球「胜平负」模拟投注器：
+
+<https://zykalai.github.io/odds-calculator/sports-lottery-simulator/>
+
+原版依赖 Node/Express 账号服务；GitHub Pages 版本内置了 localStorage 版 API shim，注册后即有 10000 虚拟余额，刷新不会丢账号。所有比赛、赔率和开奖仍由前端生成，不涉及真实货币。
